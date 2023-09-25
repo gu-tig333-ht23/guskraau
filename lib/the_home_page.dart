@@ -3,18 +3,8 @@ import 'package:provider/provider.dart';
 import 'add_todo_view.dart';
 import 'todo.dart';
 
-
-// Kod för att bygga upp homepage och sköta tillståndshantering   
-
-class TheHomePage extends StatefulWidget {
-  const TheHomePage({super.key});
-
-  @override
-  _TheHomePageState createState() => _TheHomePageState();
-}
-
-class _TheHomePageState extends State<TheHomePage> {
-  bool? showCompleted;
+class TheHomePage extends StatelessWidget {
+  const TheHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,38 +13,30 @@ class _TheHomePageState extends State<TheHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal,
-        title: Padding(
-          padding: EdgeInsets.only(left: 45),
-          child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Att göra', 
-              style: TextStyle(
-                fontSize: 24,
-              ),
-            ),
+        title: Text(
+          'Att göra',
+          style: TextStyle(
+            fontSize: 24,
           ),
         ),
         actions: [
           DropdownButton<bool?>(
-            value: showCompleted,
+            value: todoProvider.showCompleted,
             onChanged: (newValue) {
-              setState(() {
-                showCompleted = newValue;
-              });
+              todoProvider.setShowCompleted(newValue);
             },
             items: [
               DropdownMenuItem(
                 value: null,
-                child: Text('Alla sysslor'), // Visa både avklarade och ej avklarade
+                child: Text('Alla sysslor'),
               ),
               DropdownMenuItem(
                 value: false,
-                child: Text('Ej avklarade'), // Visa endast ej avklarade todos
+                child: Text('Ej avklarade'),
               ),
               DropdownMenuItem(
                 value: true,
-                child: Text('Avklarade'), // Visa endast avklarade todos
+                child: Text('Avklarade'),
               ),
             ],
           ),
@@ -64,24 +46,39 @@ class _TheHomePageState extends State<TheHomePage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddTodoView()), // Öppna sidan för att lägga till ny todo
+              MaterialPageRoute(
+                  builder: (context) =>
+                      AddTodoView()),
             );
           },
         ),
       ),
-      body: ListView.builder(
-        itemCount: todoProvider.getFilteredTodos(showCompleted).length,
-        itemBuilder: (context, index) {
-          return _item(
-            context,
-            todoProvider.getFilteredTodos(showCompleted)[index],
-          );
+      body: FutureBuilder<List<Todo>>(
+        future: todoProvider.fetchTodos(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Fel: ${snapshot.error}'));
+          } else {
+            final todos = snapshot.data ?? [];
+            return ListView.builder(
+              itemCount: todos.length,
+              itemBuilder: (context, index) {
+                final todo = todos[index];
+                if (todoProvider.showCompleted == null ||
+                    (todoProvider.showCompleted == todo.done)) {
+                  return _item(context, todo);
+                }
+                return SizedBox.shrink();
+              },
+            );
+          }
         },
       ),
     );
   }
 
-  // Widget för att hantera element i listan
   Widget _item(BuildContext context, Todo todo) {
     final todoProvider = Provider.of<TodoProvider>(context);
 
@@ -94,12 +91,11 @@ class _TheHomePageState extends State<TheHomePage> {
           child: Transform.scale(
             scale: 1.5,
             child: Checkbox(
-              value: todo.isCompleted,
-              onChanged: (bool? newValue) {
+              value: todo.done,
+              onChanged: (bool? newValue) async {
                 if (newValue != null) {
-                  setState(() {
-                    todo.isCompleted = newValue;
-                  });
+                  todo.done = newValue;
+                  await todoProvider.updateTodo(todo);
                 }
               },
               activeColor: Colors.teal,
@@ -113,10 +109,10 @@ class _TheHomePageState extends State<TheHomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                todo.chore,
+                todo.title,
                 style: TextStyle(
                   fontSize: 22,
-                  decoration: todo.isCompleted
+                  decoration: todo.done
                       ? TextDecoration.lineThrough
                       : TextDecoration.none,
                 ),
@@ -127,8 +123,8 @@ class _TheHomePageState extends State<TheHomePage> {
         Padding(
           padding: EdgeInsets.only(right: 10),
           child: GestureDetector(
-            onTap: () {
-              todoProvider.removeTodo(todo); // Ta bort todo när användaren klickar på stängknappen
+            onTap: () async {
+              await todoProvider.removeTodo(todo);
             },
             child: Icon(
               Icons.close,
@@ -140,5 +136,3 @@ class _TheHomePageState extends State<TheHomePage> {
     );
   }
 }
-
-

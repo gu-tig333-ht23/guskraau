@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'todo.dart';
 
-// Vy för att lägga till nya sysslor i listan
-
 class AddTodoView extends StatefulWidget {
-  const AddTodoView({super.key});
+  const AddTodoView({Key? key}) : super(key: key);
 
   @override
   _AddTodoViewState createState() => _AddTodoViewState();
@@ -30,7 +28,7 @@ class _AddTodoViewState extends State<AddTodoView> {
           children: [
             Padding(
               padding: const EdgeInsets.all(40),
-              child: Container(  //Texxtruta för att skriva in nytt element i todo-listan
+              child: Container(
                 width: 350,
                 height: 60,
                 decoration: BoxDecoration(
@@ -48,11 +46,12 @@ class _AddTodoViewState extends State<AddTodoView> {
                 ),
               ),
             ),
-            ElevatedButton( // Knapp för att lägga till det skrivna
-              onPressed: () {
+            ElevatedButton(
+              onPressed: () async {
                 String newChore = _textEditingController.text;
                 if (newChore.isNotEmpty) {
-                  todoProvider.addTodo(newChore);
+                  // Lägg till den nya Todo med API-anrop
+                  await todoProvider.addTodo(newChore);
                   _textEditingController.clear();
                   Navigator.pop(context);
                 }
@@ -68,3 +67,4 @@ class _AddTodoViewState extends State<AddTodoView> {
     );
   }
 }
+
