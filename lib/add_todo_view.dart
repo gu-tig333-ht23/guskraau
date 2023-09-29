@@ -18,7 +18,7 @@ class _AddTodoViewState extends State<AddTodoView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lägg till ett nytt objekt'),
+        title: Text('Lägg till ett nytt objekt'), // Titel för vyn
         backgroundColor: Colors.teal,
       ),
       body: Align(
@@ -40,7 +40,7 @@ class _AddTodoViewState extends State<AddTodoView> {
                   child: TextField(
                     controller: _textEditingController,
                     decoration: InputDecoration(
-                      hintText: 'Skriv in en ny uppgift',
+                      hintText: 'Skriv in en ny uppgift', // Placeholder text
                     ),
                   ),
                 ),
@@ -59,7 +59,7 @@ class _AddTodoViewState extends State<AddTodoView> {
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
               ),
-              child: Text('Lägg till'),
+              child: Text('Lägg till'), //Knapp-text för att lägga till i listan
             ),
           ],
         ),

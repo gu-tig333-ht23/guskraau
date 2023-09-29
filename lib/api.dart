@@ -5,7 +5,7 @@ import 'package:template/todo.dart';
 const String ENDPOINT = 'https://todoapp-api.apps.k8s.gu.se';
 const String apiKey = 'cddfa743-1300-4e97-aa14-0284935d4ebe';
 
-// Getlist
+// Hämta lista från server
 Future<List<Todo>> getTodoItem() async {
   http.Response response =
       await http.get(Uri.parse('$ENDPOINT/todos?key=$apiKey'));
@@ -16,7 +16,7 @@ Future<List<Todo>> getTodoItem() async {
   return todosJson.map((json) => Todo.fromJson(json)).toList();
   }
 
-// AddItem
+// Lägga till element u listan på servern
 Future<void> addTodos(Todo todos) async {
   await http.post(
     Uri.parse('$ENDPOINT/todos?key=$apiKey'),
@@ -25,12 +25,12 @@ Future<void> addTodos(Todo todos) async {
   );
 }
 
-// Delete item
+// Ta bort element från listan på servern
 Future<void> deleteTodoItem(String id) async {
   await http.delete(Uri.parse('$ENDPOINT/todos/$id?key=$apiKey'));
 }
 
-//Update item
+// Uppdatera element i listan på servern
 Future<void> updateTodoItem(Todo todos) async {
   final id = todos.id;
   await http.put(

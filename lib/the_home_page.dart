@@ -23,20 +23,20 @@ class TheHomePage extends StatelessWidget {
           DropdownButton<bool?>(
             value: todoProvider.showCompleted,
             onChanged: (newValue) {
-              todoProvider.setShowCompleted(newValue);
+              todoProvider.setShowCompleted(newValue); // Dropdown för att filtrera sysslor i listan
             },
             items: [
               DropdownMenuItem(
                 value: null,
-                child: Text('Alla sysslor'),
+                child: Text('Alla sysslor'), // Visa alla sysslor
               ),
               DropdownMenuItem(
                 value: false,
-                child: Text('Ej avklarade'),
+                child: Text('Ej avklarade'), // Visa ej avklarade sysslor
               ),
               DropdownMenuItem(
                 value: true,
-                child: Text('Avklarade'),
+                child: Text('Avklarade'), // Visa avklarade sysslor
               ),
             ],
           ),
@@ -48,13 +48,13 @@ class TheHomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      AddTodoView()),
+                      AddTodoView()), //Navigera till sida för att lägga till ny syssla
             );
           },
         ),
       ),
       body: FutureBuilder<List<Todo>>(
-        future: todoProvider.fetchTodos(),
+        future: todoProvider.fetchTodos(), // Hämtar todos från server
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -68,7 +68,7 @@ class TheHomePage extends StatelessWidget {
                 final todo = todos[index];
                 if (todoProvider.showCompleted == null ||
                     (todoProvider.showCompleted == todo.done)) {
-                  return _item(context, todo);
+                  return _item(context, todo);  // Visa varje element i listan
                 }
                 return SizedBox.shrink();
               },

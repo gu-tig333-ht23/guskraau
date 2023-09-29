@@ -6,7 +6,7 @@ import 'todo.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => TodoProvider(),
+      create: (context) => TodoProvider(), // Skapa provider för att hantera todos
       child: const TheApp(),
     ),
   );
