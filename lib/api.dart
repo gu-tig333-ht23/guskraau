@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:template/todo.dart';
 
 const String ENDPOINT = 'https://todoapp-api.apps.k8s.gu.se';
-const String apiKey = 'cddfa743-1300-4e97-aa14-0284935d4ebe';
+const String apiKey = '176cea6b-35c3-452c-8058-887699207026';
 
 // Hämta lista från server
 Future<List<Todo>> getTodoItem() async {

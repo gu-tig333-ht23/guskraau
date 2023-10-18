@@ -23,20 +23,20 @@ class TheHomePage extends StatelessWidget {
           DropdownButton<bool?>(
             value: todoProvider.showCompleted,
             onChanged: (newValue) {
-              todoProvider.setShowCompleted(newValue); // Dropdown för att filtrera sysslor i listan
+              todoProvider.setShowCompleted(newValue);
             },
             items: [
               DropdownMenuItem(
                 value: null,
-                child: Text('Alla sysslor'), // Visa alla sysslor
+                child: Text('Alla sysslor'),
               ),
               DropdownMenuItem(
                 value: false,
-                child: Text('Ej avklarade'), // Visa ej avklarade sysslor
+                child: Text('Ej avklarade'),
               ),
               DropdownMenuItem(
                 value: true,
-                child: Text('Avklarade'), // Visa avklarade sysslor
+                child: Text('Avklarade'),
               ),
             ],
           ),
@@ -48,33 +48,27 @@ class TheHomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      AddTodoView()), //Navigera till sida för att lägga till ny syssla
+                      AddTodoView()),
             );
           },
         ),
       ),
-      body: FutureBuilder<List<Todo>>(
-        future: todoProvider.fetchTodos(), // Hämtar todos från server
+      body: FutureBuilder<void>(
+        future: todoProvider.fetchAndSetTodos(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Fel: ${snapshot.error}'));
-          } else {
-            final todos = snapshot.data ?? [];
+            final todos = todoProvider.todos; //Modifierad för att använda todos från TodoProvider
             return ListView.builder(
               itemCount: todos.length,
               itemBuilder: (context, index) {
                 final todo = todos[index];
                 if (todoProvider.showCompleted == null ||
                     (todoProvider.showCompleted == todo.done)) {
-                  return _item(context, todo);  // Visa varje element i listan
+                  return _item(context, todo);
                 }
                 return SizedBox.shrink();
               },
             );
           }
-        },
       ),
     );
   }

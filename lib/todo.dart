@@ -36,18 +36,21 @@ class TodoProvider extends ChangeNotifier {
   bool? _showCompleted;
   bool? get showCompleted => _showCompleted;
 
+  List<Todo> get todos => _todos;
+
   void setShowCompleted(bool? value) {
     _showCompleted = value;
     notifyListeners();
   }
 
-  Future<List<Todo>> fetchTodos() async {
+  Future<void> fetchAndSetTodos() async {
     try {
       final response = await http.get(Uri.parse('$ENDPOINT/todos?key=$apiKey'));
 
       if (response.statusCode == 200) {
         List<dynamic> todosJson = jsonDecode(response.body);
-        return todosJson.map((json) => Todo.fromJson(json)).toList();
+        _todos = todosJson.map((json) => Todo.fromJson(json)).toList();
+        notifyListeners();
       } else {
         throw Exception('Kan ej ladda lista');
       }
@@ -63,7 +66,7 @@ class TodoProvider extends ChangeNotifier {
       _todos.add(newTodo);
       notifyListeners();
     } catch (error) {
-      print('Fel vid försök att lägga till syssla: $error');
+      print('Fel vid addering av Todo: $error');
     }
   }
 
@@ -73,7 +76,7 @@ class TodoProvider extends ChangeNotifier {
       _todos.remove(todo);
       notifyListeners();
     } catch (error) {
-      print('Fel vid borttagning av syssla: $error');
+      print('Fel vid borttagning av Todo: $error');
     }
   }
 
@@ -82,12 +85,9 @@ class TodoProvider extends ChangeNotifier {
       await updateTodoItem(todo);
       notifyListeners();
     } catch (error) {
-      print('Fel vid uppdatering av syssla: $error');
+      print('Fel vid uppdatering av Todo: $error');
     }
   }
-
-  List<Todo> get todos => _todos;
-  List<Todo> get completedTodos => _todos.where((todo) => todo.done).toList();
-  List<Todo> get nonCompletedTodos =>
-      _todos.where((todo) => !todo.done).toList();
 }
+
+
