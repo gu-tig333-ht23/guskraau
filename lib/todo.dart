@@ -60,15 +60,14 @@ class TodoProvider extends ChangeNotifier {
   }
 
   Future<void> addTodo(String title) async {
-    try {
-      final newTodo = Todo(id: '', title: title, done: false);
-      await addTodos(newTodo);
-      _todos.add(newTodo);
-      notifyListeners();
-    } catch (error) {
-      print('Fel vid addering av Todo: $error');
-    }
+  try {
+    final newTodo = Todo(id: '', title: title, done: false);
+    await addTodos(newTodo);
+    await fetchAndSetTodos(); // Hämta alla todos igen för att uppdatera med rätt ID
+  } catch (error) {
+    print('Fel vid addering av Todo: $error');
   }
+}
 
   Future<void> removeTodo(Todo todo) async {
     try {
